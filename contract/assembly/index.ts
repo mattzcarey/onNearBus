@@ -12,7 +12,7 @@
  *
  */
 
-import { context, Context, logging, storage } from 'near-sdk-as'
+import { context, Context, u128, ContractPromiseBatch, logging, storage } from 'near-sdk-as'
 import { games, GameState, OnNearBus } from './game'
 import { Deck } from './deck'
 
@@ -38,7 +38,7 @@ export function play(answer: String) : String {
 
   switch (game.gameState) {
     case GameState.RedOrBlack: {
-      assert(answer === 'red' || 'black', 'Not a valid input, use red or black')
+      assert(answer === 'red' || 'black', 'Not a valid input, ' + round1)
       game.card1 = game.deck.pop()
       if (answer === game.card1.color) {
         game.gameState = GameState.HigherOrLower
@@ -49,7 +49,7 @@ export function play(answer: String) : String {
       }
     }
     case GameState.HigherOrLower: {
-      assert(answer === 'higher' || 'lower', 'Not a valid input, use higher or lower')
+      assert(answer === 'higher' || 'lower', 'Not a valid input, ' + round2)
       game.card2 = game.deck.pop()
       if ((answer === 'higher' && game.card1.numValue < game.card2.numValue) || (answer === 'lower' && game.card1.numValue > game.card2.numValue)) {
         game.gameState = GameState.InsideOrOutside
@@ -60,7 +60,7 @@ export function play(answer: String) : String {
       }
     }
     case GameState.InsideOrOutside: {
-      assert(answer === 'inside' || 'outside', 'Not a valid input, use inside or outside')
+      assert(answer === 'inside' || 'outside', 'Not a valid input, ' + round3)
       game.card3 = game.deck.pop()
       if ((Math.min(game.card1.numValue, game.card2.numValue) < game.card3.numValue) && game.card3.numValue < Math.max(game.card2.numValue, game.card1.numValue)) {
         // Card is inside
@@ -83,18 +83,29 @@ export function play(answer: String) : String {
       }
     }
     case GameState.WhichSuit: {
-      assert(answer === 'hearts' || 'clubs' || 'diamonds' || 'spades', 'Not a valid input.')
+      assert(answer === 'hearts' || 'clubs' || 'diamonds' || 'spades', 'Not a valid input. ' + round4)
       game.card4 = game.deck.pop()
-      if ((answer === game.card4.suit) {
+      if (answer === game.card4.suit) {
         game.gameState = GameState.Completed
+        finishGame(game)
         return('Congratulations, the final card is the ' + game.card4.value + ' of ' + game.card4.suit + '.\n')
       } else { 
         games.delete(context.sender)
-        return('Your card is the ' + game.card2.value + ' of ' + game.card2.suit + '.\n Better luck next time :(' )
+        return('The final card is the ' + game.card4.value + ' of ' + game.card4.suit + '.\n Better luck next time :(' )
       }
     }
+    default: return('Noooooooooooo')
   }
 
+}
+
+function finishGame(game : OnNearBus) : String {
+  const to_winner = ContractPromiseBatch.create(context.sender)
+  const prize : u128  = new u128(i64(game.amount)*4)
+  to_winner.transfer(prize)
+
+  games.delete(context.sender)
+  return('Congrats :) don\'t spend it all at once. Prize = ' + prize.toString)
 }
 
 
