@@ -12,21 +12,21 @@ export class Deck {
     // suits = [ 'hearts', 'clubs', 'diamonds', 'spades']
     // values = [ '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king', 'ace']
     cards: Card[]
-    constructor(cards = initDeck()) {
+    constructor(cards : Card[] = initDeck()) {
         this.cards = cards
     }
 
-    numberOfCards() {
+    numberOfCards() : i32 {
         return this.cards.length
     }
 
-    pop() {
+    pop() : Card {
         return this.cards.shift()
     }
 
-    shuffle() {
+    shuffle() : void {
         for (let i = this.numberOfCards() - 1; i > 0; i--) {
-            const newIndex = Math.floor(Math.random() * (i + 1))
+            const newIndex : i32 = i32(Math.floor(Math.random() * (i + 1)))
             const oldValue = this.cards[newIndex]
             this.cards[newIndex] = this.cards[i]
             this.cards[i] = oldValue

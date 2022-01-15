@@ -1,20 +1,5 @@
-/*
- * This is an example of an AssemblyScript smart contract with two simple,
- * symmetric functions:
- *
- * 1. setGreeting: accepts a greeting, such as "howdy", and records it for the
- *    user (account_id) who sent the request
- * 2. getGreeting: accepts an account_id and returns the greeting saved for it,
- *    defaulting to "Hello"
- *
- * Learn more about writing NEAR smart contracts with AssemblyScript:
- * https://docs.near.org/docs/develop/contracts/as/intro
- *
- */
-
-import { context, Context, u128, ContractPromiseBatch, logging, storage } from 'near-sdk-as'
+import { context, u128, ContractPromiseBatch } from 'near-sdk-as'
 import { games, GameState, OnNearBus } from './game'
-import { Deck } from './deck'
 
 const WELCOME_MESSAGE: String = 'Welcome to On Near Bus: a blockchain adaptation of the popular drinking game.\n'
 const round1: String = "\'red\' or \'black\'?"
@@ -101,11 +86,11 @@ export function play(answer: String) : String {
 
 function finishGame(game : OnNearBus) : String {
   const to_winner = ContractPromiseBatch.create(context.sender)
-  const prize : u128  = new u128(i64(game.amount)*4)
+  const prize : u128  = game.amount
   to_winner.transfer(prize)
 
   games.delete(context.sender)
-  return('Congrats :) don\'t spend it all at once. Prize = ' + prize.toString)
+  return('Congrats :) don\'t spend it all at once. Prize = ' + prize.toString())
 }
 
 
