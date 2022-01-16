@@ -1,8 +1,8 @@
 onTheBus
 ==================
+Dapp on the Near testnet. 
 
-This [React] app was initialized with [create-near-app]
-
+Based on the popular drinking game, 'On the Bus'.
 
 Quick Start
 ===========
